@@ -1,6 +1,8 @@
-﻿using Jenkins.Core;
+﻿using Akavache;
+using Jenkins.Core;
 using System;
 using System.Net;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,11 +20,22 @@ namespace ScanTDTResults
         }
 
         /// <summary>
-        /// Download a string
+        /// Download a string, pulling it from a cache first if need be.
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public Task<string> DownloadStringTaskAsync(string url)
+        public async Task<string> DownloadStringTaskAsync(string url)
+        {
+            return await BlobCache.UserAccount.GetOrFetchObject(url, () => DownloadStringFromWeb(url))
+                .FirstAsync();
+        }
+
+        /// <summary>
+        /// Pull the string from the web directly.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private Task<string> DownloadStringFromWeb(string url)
         {
             using (var wc = new WebClient())
             {
