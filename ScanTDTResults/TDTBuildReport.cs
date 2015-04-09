@@ -1,5 +1,4 @@
 ﻿
-using Akavache;
 using System.IO;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -16,11 +15,17 @@ namespace ScanTDTResults
             this._build = _build;
 
             BuildWarningsTotal = 0;
+            BuildWarningsBoost = 0;
+            isPassedHLTAny = 0;
+            isPassedL1Any = 0;
         }
 
         private bool _parsed = false;
         public int BuildWarningsTotal { get; private set; }
         public int BuildWarningsBoost { get; private set; }
+        public bool isPassedWorking { get; private set; }
+        public int isPassedL1Any { get; private set; }
+        public int isPassedHLTAny { get; private set; }
 
         /// <summary>
         /// Get the build report (console text) and parse it.
@@ -33,8 +38,7 @@ namespace ScanTDTResults
             _parsed = true;
 
             // First, get and cache the web client. If we've cached it, no worries.
-            var fullLog = await BlobCache.UserAccount.GetOrFetchObject(_build.ConsoleTextUrl, () => TDTJobAccess.GetAsString(_build.ConsoleTextUrl))
-                .FirstAsync();
+            var fullLog = await TDTJobAccess.GetAsString(_build.ConsoleTextUrl);
 
             // Now, look for warnings during the build. This is, basically, a line-by-line search for things.
             foreach (var line in fullLog.AsLines())
@@ -55,11 +59,23 @@ namespace ScanTDTResults
         /// Dump out the log of the build.
         /// </summary>
         /// <param name="wr"></param>
-        public async Task WriteReport(TextWriter wr, string indent = "")
+        public async Task WriteReportBuild(TextWriter wr, string indent = "")
         {
             await Parse();
             wr.WriteLine("{1}Number of build warnings: {0}", BuildWarningsTotal, indent);
             wr.WriteLine("{1}  Number due to boost: {0}", BuildWarningsBoost, indent);
+        }
+
+        /// <summary>
+        /// Generate a report on how this thing actually ran.
+        /// </summary>
+        /// <param name="textWriter"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        internal async Task WriteReportRun(TextWriter wr, string indent = "")
+        {
+            await Parse();
+            wr.WriteLine("{0}isPassed: {1}", indent, isPassedWorking);
         }
     }
 }

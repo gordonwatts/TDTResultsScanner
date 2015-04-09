@@ -10,6 +10,11 @@ namespace ScanTDTResults
         {
             Akavache.BlobCache.ApplicationName = "ScanTDTResults";
 
+            //
+            // Get the basic job info, and make sure the last job is something we are ready to
+            // go with.
+            //
+
             var cl = new TDTJobAccess();
             var lastBuild = cl.GetLastBuild().Result;
 
@@ -28,10 +33,13 @@ namespace ScanTDTResults
                 Console.WriteLine("  Build completed ok");
             }
 
-            // Get all the runs in the build.
-            var runs = cl.GetRunsForBuild(lastBuild).Result;
+            //
+            // Get the various runs, and analyze them.
+            // First, look at them by-build. And then the results of each one.
+            //
 
-            // Now, look at one for each build, and analyze the log file.
+            Console.WriteLine();
+            var runs = cl.GetRunsForBuild(lastBuild).Result;
             var byBuild = from r in runs
                           group r by r.RootCoreRelease;
             var buildList = from b in byBuild
@@ -39,7 +47,14 @@ namespace ScanTDTResults
             foreach (var b in buildList)
             {
                 Console.WriteLine("Build report for release {0}", b.RootCoreRelease);
-                b.BuildReport.WriteReport(Console.Out, "  ").Wait();
+                b.BuildReport.WriteReportBuild(Console.Out, "  ").Wait();
+            }
+
+            Console.WriteLine();
+            foreach (var b in runs)
+            {
+                Console.WriteLine("Build report for: r{1} - {0}", b.RootCoreRelease, b.AmiRecoReleaseTag);
+                b.BuildReport.WriteReportRun(Console.Out, "  ").Wait();
             }
         }
     }
