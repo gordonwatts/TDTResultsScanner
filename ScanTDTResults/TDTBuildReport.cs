@@ -1,5 +1,7 @@
 ﻿
+using System;
 using System.IO;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
@@ -52,6 +54,18 @@ namespace ScanTDTResults
                     }
                 }
             }
+
+            // Look at the two artifacts. If there aren't two, then this is very bad.
+            var isPassedAPath = _build.Artifacts.Where(a => a.DisplayPath == "trigDecsion.root").FirstOrDefault();
+            var featureInfoPath = _build.Artifacts.Where(a => a.DisplayPath == "associatedFeatures.root").FirstOrDefault();
+
+            if (isPassedAPath == null || featureInfoPath == null)
+            {
+                Console.WriteLine("--> Build seems to be missing proper artifact files!");
+                return;
+            }
+
+            var isPassedFile = await isPassedAPath.SaveToTempFile(_build, ".root");
 
         }
 
