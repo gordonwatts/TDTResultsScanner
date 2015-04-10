@@ -51,8 +51,11 @@ namespace ScanTDTResults
             }
 
             Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
             foreach (var b in runs)
             {
+                Console.WriteLine();
                 Console.WriteLine("Build report for: r{1} - {0}", b.RootCoreRelease, b.AmiRecoReleaseTag);
                 b.BuildReport.WriteReportRun(Console.Out, "  ").Wait();
             }
