@@ -23,6 +23,8 @@ namespace ScanTDTResults
 
             isPassedWorking = false;
             FoundEvents = false;
+
+            FoundElectronFeatures = false;
         }
 
         private bool _parsed = false;
@@ -34,6 +36,8 @@ namespace ScanTDTResults
         public bool isPassedWorking { get; private set; }
         public int isPassedL1Any { get; private set; }
         public int isPassedHLTAny { get; private set; }
+
+        public bool FoundElectronFeatures { get; private set; }
 
         /// <summary>
         /// Get the build report (console text) and parse it.
@@ -85,6 +89,14 @@ namespace ScanTDTResults
             isPassedHLTAny = (int)hTrigger.GetBinContent(titles["HLT"]);
             isPassedWorking = isPassedL1Any > 0 && isPassedHLTAny > 0;
 
+            rf.Close();
+
+            // Next look at eh features results.
+            var featureFile = await featureInfoPath.SaveToTempFile(_build, "root");
+            rf = ROOTNET.NTFile.Open(featureFile.FullName, "READ");
+
+            var eleFeatures = rf.Get("eleNFeature") as ROOTNET.Interface.NTH1;
+            FoundElectronFeatures = (int)eleFeatures.Entries != (int)eleFeatures.GetBinContent(1);
 
             rf.Close();
         }
@@ -113,6 +125,7 @@ namespace ScanTDTResults
             wr.WriteLine("{0}isPassed: {1}", indent, isPassedWorking);
             wr.WriteLine("{0}  HLT Passed: {1}", indent, isPassedHLTAny);
             wr.WriteLine("{0}  L1 Passed: {1}", indent, isPassedL1Any);
+            wr.WriteLine("{0}Electron Feature Extraction: {1}", indent, FoundElectronFeatures);
         }
     }
 }
