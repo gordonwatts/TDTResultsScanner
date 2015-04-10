@@ -28,15 +28,11 @@ namespace ScanTDTResults
         /// <returns></returns>
         public static async Task<FileInfo> SaveToFile(this JenkinsArtifact artifact, JenkinsBuild bld, FileInfo destination)
         {
-            var url = string.Format("{0}/{1}", bld.Url, artifact.RelativePath);
-            var fileData = await TDTJobAccess.GetAsString(url).FirstAsync();
+            var url = string.Format("{0}artifact/{1}", bld.Url, artifact.RelativePath);
+            var fileData = await TDTJobAccess.GetAsBytes(url).FirstAsync();
             using (var wr = destination.Create())
             {
-                using (var txtwr = new StreamWriter(wr))
-                {
-                    txtwr.Write(fileData);
-                }
-                wr.Close();
+                wr.Write(fileData, 0, fileData.Length);
             }
             return destination;
         }

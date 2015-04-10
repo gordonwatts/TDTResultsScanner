@@ -27,7 +27,7 @@ namespace ScanTDTResults
             return _client;
         }
 
-        private static IJenkinsWebClient _webClient = null;
+        private static BasicAuthJenkinsClient _webClient = null;
 
         /// <summary>
         /// Load up the access. NOTE: your api key should be in the windows credential store for this server!!!
@@ -97,11 +97,16 @@ namespace ScanTDTResults
         /// <summary>
         /// Get the data as a string from the given url
         /// </summary>
-        /// <param name="p"></param>
+        /// <param name="url"></param>
         /// <returns></returns>
-        internal static IObservable<string> GetAsString(string p)
+        internal static IObservable<string> GetAsString(string url)
         {
-            return Observable.FromAsync(() => _webClient.DownloadStringTaskAsync(p));
+            return Observable.FromAsync(() => _webClient.DownloadStringTaskAsync(url));
+        }
+
+        internal static IObservable<byte[]> GetAsBytes(string url)
+        {
+            return Observable.FromAsync(() => _webClient.DownloadBytesTaskAsync(url));
         }
     }
 }

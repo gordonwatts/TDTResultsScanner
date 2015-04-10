@@ -65,7 +65,7 @@ namespace ScanTDTResults
                 return;
             }
 
-            var isPassedFile = await isPassedAPath.SaveToTempFile(_build, ".root");
+            var isPassedFile = await isPassedAPath.SaveToTempFile(_build, "root");
 
         }
 
