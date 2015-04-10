@@ -25,6 +25,9 @@ namespace ScanTDTResults
         private bool _parsed = false;
         public int BuildWarningsTotal { get; private set; }
         public int BuildWarningsBoost { get; private set; }
+
+        public bool FoundEvents { get; private set; }
+
         public bool isPassedWorking { get; private set; }
         public int isPassedL1Any { get; private set; }
         public int isPassedHLTAny { get; private set; }
@@ -65,8 +68,12 @@ namespace ScanTDTResults
                 return;
             }
 
+            // Check that we saw events
             var isPassedFile = await isPassedAPath.SaveToTempFile(_build, "root");
-
+            var rf = ROOTNET.NTFile.Open(isPassedFile.FullName, "READ");
+            var hpassed = rf.Get("eventCounter") as ROOTNET.Interface.NTH1;
+            FoundEvents = hpassed.Entries > 0;
+            rf.Close();
         }
 
         /// <summary>
@@ -89,6 +96,7 @@ namespace ScanTDTResults
         internal async Task WriteReportRun(TextWriter wr, string indent = "")
         {
             await Parse();
+            wr.WriteLine("{0}Event Loop Working: {1}", indent, FoundEvents);
             wr.WriteLine("{0}isPassed: {1}", indent, isPassedWorking);
         }
     }

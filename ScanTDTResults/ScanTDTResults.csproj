@@ -11,7 +11,7 @@
     <AssemblyName>ScanTDTResults</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>bd460459</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>1b2a11a8</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,6 +32,26 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Akavache">
       <HintPath>..\packages\akavache.core.4.1.1\lib\net45\Akavache.dll</HintPath>
@@ -51,6 +71,30 @@
     </Reference>
     <Reference Include="Jenkins.Domain">
       <HintPath>..\..\JenkinsController\Jenkins.Core\bin\Release\Jenkins.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="libCoreWrapper, Version=5.5.5529.38787, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Dynamic.5.34.26.5\lib\net40\libCoreWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="libHistWrapper, Version=5.5.5529.38862, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.26.5\lib\net40\libHistWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="libMathCoreWrapper, Version=5.5.5529.38798, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.26.5\lib\net40\libMathCoreWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="libPhysicsWrapper, Version=5.5.5529.39008, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.26.5\lib\net40\libPhysicsWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="libRIOWrapper, Version=5.5.5529.38887, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.26.5\lib\net40\libRIOWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="libThreadWrapper, Version=5.5.5529.38860, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.26.5\lib\net40\libThreadWrapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -88,6 +132,10 @@
       <HintPath>..\packages\WinGenericCredentials.1.0.1\lib\Net40-client\WebGenericCredentialsLib.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="WrapperPlumbingLibrary, Version=2.6.5529.38636, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Dynamic.5.34.26.5\lib\net40\WrapperPlumbingLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
@@ -111,7 +159,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\SQLitePCL.raw_basic.0.7.0\build\net45\SQLitePCL.raw_basic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCL.raw_basic.0.7.0\build\net45\SQLitePCL.raw_basic.targets'))" />
+    <Error Condition="!Exists('..\packages\ROOT.NET.Dynamic.5.34.26.5\build\net40\ROOT.NET.Dynamic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ROOT.NET.Dynamic.5.34.26.5\build\net40\ROOT.NET.Dynamic.targets'))" />
   </Target>
+  <Import Project="..\packages\ROOT.NET.Dynamic.5.34.26.5\build\net40\ROOT.NET.Dynamic.targets" Condition="Exists('..\packages\ROOT.NET.Dynamic.5.34.26.5\build\net40\ROOT.NET.Dynamic.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
