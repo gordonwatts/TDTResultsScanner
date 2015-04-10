@@ -20,6 +20,9 @@ namespace ScanTDTResults
             BuildWarningsBoost = 0;
             isPassedHLTAny = 0;
             isPassedL1Any = 0;
+
+            isPassedWorking = false;
+            FoundEvents = false;
         }
 
         private bool _parsed = false;
@@ -68,11 +71,21 @@ namespace ScanTDTResults
                 return;
             }
 
-            // Check that we saw events
+            // Check that we saw events, and the basic trigger stuff worked.
             var isPassedFile = await isPassedAPath.SaveToTempFile(_build, "root");
             var rf = ROOTNET.NTFile.Open(isPassedFile.FullName, "READ");
             var hpassed = rf.Get("eventCounter") as ROOTNET.Interface.NTH1;
             FoundEvents = hpassed.Entries > 0;
+
+            var hTrigger = rf.Get("passEvents") as ROOTNET.Interface.NTH1;
+            var titles = hTrigger.Xaxis.Labels.Zip(Enumerable.Range(1, 10), (lbl, cnt) => Tuple.Create(lbl, cnt))
+                .ToDictionary(info => (info.Item1 as ROOTNET.Interface.NTObjString).Name, info => info.Item2);
+
+            isPassedL1Any = (int)hTrigger.GetBinContent(titles["L1"]);
+            isPassedHLTAny = (int)hTrigger.GetBinContent(titles["HLT"]);
+            isPassedWorking = isPassedL1Any > 0 && isPassedHLTAny > 0;
+
+
             rf.Close();
         }
 
@@ -98,6 +111,8 @@ namespace ScanTDTResults
             await Parse();
             wr.WriteLine("{0}Event Loop Working: {1}", indent, FoundEvents);
             wr.WriteLine("{0}isPassed: {1}", indent, isPassedWorking);
+            wr.WriteLine("{0}  HLT Passed: {1}", indent, isPassedHLTAny);
+            wr.WriteLine("{0}  L1 Passed: {1}", indent, isPassedL1Any);
         }
     }
 }
